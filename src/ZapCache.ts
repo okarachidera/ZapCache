@@ -1,4 +1,4 @@
-class SpeedyCache<T = any> {
+class ZapCache<T = any> {
   private cache: Map<string, { value: T; expiry: number | null }> = new Map();
 
   set(key: string, value: T, ttl?: number): void {
@@ -36,4 +36,4 @@ class SpeedyCache<T = any> {
   }
 }
 
-export default SpeedyCache;
+export default ZapCache;

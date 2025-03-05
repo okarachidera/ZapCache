@@ -1,11 +1,11 @@
 import { test, beforeEach } from "node:test";
 import assert from "node:assert";
-import SpeedyCache from "../src/SpeedyCache.js"; // ✅ Explicit .js extension
+import ZapCache from "../src/ZapCache.js"; // ✅ Explicit .js extension
 
-let cache: SpeedyCache<string>;
+let cache: ZapCache<string>;
 
 beforeEach(() => {
-  cache = new SpeedyCache<string>();
+  cache = new ZapCache<string>();
 });
 
 test("should set and get a value", () => {

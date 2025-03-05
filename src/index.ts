@@ -1,3 +1,3 @@
-import SpeedyCache from "./SpeedyCache.js"; 
+import ZapCache from "./ZapCache.js"; 
 
-export default SpeedyCache;
+export default ZapCache;
