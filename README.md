@@ -176,8 +176,8 @@ setTimeout(() => {
 ## 🔐 Security Considerations
 ⚠️ Do not store sensitive user data (passwords, private keys) in cache
 
-## 📜 Changelog
-See the CHANGELOG for details on new releases.
+## 📜 [Changelog](https://github.com/okarachidera/zapcache/blob/main/CHANGELOG.md)
+See the [CHANGELOG](https://github.com/okarachidera/zapcache/blob/main/CHANGELOG.md) for details on new releases.
 
 
 ## 🎉 Contributing
@@ -194,7 +194,7 @@ npm install
 npm test
 ```
 
-## 📄 License
+## 📄 [License](https://github.com/okarachidera/zapcache/blob/main/LICENSE)
 ZapCache is released under the MIT License. See the LICENSE file for details.
 
 💬 Support & Community
