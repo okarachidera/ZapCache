@@ -1,11 +1,11 @@
 import { test, beforeEach } from "node:test";
 import assert from "node:assert";
-import FastCache from "../src/FastCache.js"; // ✅ Explicit .js extension
+import SpeedyCache from "../src/SpeedyCache.js"; // ✅ Explicit .js extension
 
-let cache: FastCache<string>;
+let cache: SpeedyCache<string>;
 
 beforeEach(() => {
-  cache = new FastCache<string>();
+  cache = new SpeedyCache<string>();
 });
 
 test("should set and get a value", () => {

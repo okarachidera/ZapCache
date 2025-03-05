@@ -1,4 +1,4 @@
-class FastCache<T = any> {
+class SpeedyCache<T = any> {
   private cache: Map<string, { value: T; expiry: number | null }> = new Map();
 
   set(key: string, value: T, ttl?: number): void {
@@ -36,4 +36,4 @@ class FastCache<T = any> {
   }
 }
 
-export default FastCache;
+export default SpeedyCache;

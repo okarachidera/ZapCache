@@ -1,3 +1,3 @@
-import FastCache from "./FastCache.js"; 
+import SpeedyCache from "./SpeedyCache.js"; 
 
-export default FastCache;
+export default SpeedyCache;
