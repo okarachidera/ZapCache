@@ -1,5 +1,4 @@
 #!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
 
 # Skip running release if the last commit was a version bump
 if git log -1 --pretty=%B | grep -q "chore(release)"; then
