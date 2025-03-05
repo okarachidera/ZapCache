@@ -39,5 +39,8 @@
       "pre-push": "npm test",
       "commit-msg": "npx --no -- commitlint --edit $1"
     }
+  },
+  "dependencies": {
+    "ioredis": "^5.5.0"
   }
 }
