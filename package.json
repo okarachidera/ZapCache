@@ -11,6 +11,7 @@
   "scripts": {
     "test": "TS_NODE_PROJECT=tsconfig.json node --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' --test $(find tests -name '*.test.ts')",
     "build": "tsc",
+    "husky": "husky install",
     "release": "standard-version",
     "prepublishOnly": "npm test"
   },
