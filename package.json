@@ -1,0 +1,42 @@
+{
+  "name": "fastcache",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    "import": "./dist/index.js",
+    "require": "./dist/index.cjs"
+  },
+  "scripts": {
+    "test": "TS_NODE_PROJECT=tsconfig.json node --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' --test $(find tests -name '*.test.ts')",
+    "build": "tsc",
+    "release": "standard-version",
+    "prepublishOnly": "npm test"
+  },
+  "keywords": [
+    "cache",
+    "node",
+    "fast",
+    "ttl"
+  ],
+  "license": "MIT",
+  "description": "",
+  "devDependencies": {
+    "@commitlint/cli": "^19.7.1",
+    "@commitlint/config-conventional": "^19.7.1",
+    "eslint": "^9.21.0",
+    "husky": "^9.1.7",
+    "prettier": "^3.5.3",
+    "standard-version": "^9.5.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm test",
+      "pre-push": "npm test",
+      "commit-msg": "npx --no -- commitlint --edit $1"
+    }
+  }
+}
