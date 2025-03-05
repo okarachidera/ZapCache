@@ -17,9 +17,14 @@
   },
   "keywords": [
     "cache",
+    "caching",
     "node",
     "fast",
-    "ttl"
+    "ttl",
+    "typescript",
+    "performance",
+    "node",
+    "memory-cache"
   ],
   "license": "MIT",
   "description": "",
