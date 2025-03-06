@@ -1,6 +1,7 @@
 .github/
 .husky/
 tests/
+src/
 commitlint.config.js
 tsconfig.json
 .gitattributes*.tgz
