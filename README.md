@@ -1,7 +1,7 @@
 # ⚡ ZapCache - High-Speed In-Memory & Distributed Cache for Node.js
 
 [![npm version](https://img.shields.io/npm/v/zapcache?color=blue&label=npm)](https://www.npmjs.com/package/zapcache)  
-[![Build Status](https://github.com/okarachidera/zapcache/actions/workflows/test.yml/badge.svg)](https://github.com/okarachidera/zapcache/actions)  
+[![Build Status](https://github.com/okarachidera/zapcache/actions/workflows/publish.yml/badge.svg)](https://github.com/okarachidera/zapcache/actions)  
 [![License](https://img.shields.io/github/license/okarachidera/zapcache.svg)](https://github.com/okarachidera/zapcache/blob/main/LICENSE)  
 [![Downloads](https://img.shields.io/npm/dt/zapcache.svg)](https://www.npmjs.com/package/zapcache)  
 
