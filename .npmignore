@@ -3,4 +3,5 @@
 tests/
 commitlint.config.js
 tsconfig.json
-.gitattributes
+.gitattributes*.tgz
+zapcache-*.tgz
