@@ -1,0 +1,6 @@
+.github/
+.husky/
+tests/
+commitlint.config.js
+tsconfig.json
+.gitattributes

@@ -24,9 +24,11 @@ jobs:
 
       - name: Run tests
         run: npm test
-
       - name: Build package
         run: npm run build
+
+      - name: Verify package contents
+        run: npm pack  # Checks what will be published
 
       - name: Publish to NPM
         run: npm publish --access public
