@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/okarachidera/ZapCache/compare/v1.4.2...v1.5.0) (2025-03-06)
+
+
+### Features
+
+* optimized package size ([6b56c6b](https://github.com/okarachidera/ZapCache/commit/6b56c6b0fd2bffc7cb6bbf23c6fa376dd8612393))
+
 ### [1.4.2](https://github.com/okarachidera/ZapCache/compare/v1.4.1...v1.4.2) (2025-03-06)
 
 ### [1.4.1](https://github.com/okarachidera/ZapCache/compare/v1.4.0...v1.4.1) (2025-03-06)
