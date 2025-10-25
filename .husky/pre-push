@@ -13,11 +13,30 @@ if ! command -v npm >/dev/null 2>&1; then
     # shellcheck source=/dev/null
     . "$HOME/.asdf/asdf.sh"
     asdf reshim nodejs >/dev/null 2>&1 || true
+  elif command -v fnm >/dev/null 2>&1; then
+    eval "$(fnm env --use-on-cd)"
+  elif command -v volta >/dev/null 2>&1; then
+    if volta which node >/dev/null 2>&1; then
+      export PATH="$(volta which node | xargs dirname):$PATH"
+    fi
+  fi
+
+  if ! command -v npm >/dev/null 2>&1; then
+    for candidate in /opt/homebrew/bin /usr/local/bin; do
+      if [ -x "$candidate/npm" ]; then
+        export PATH="$candidate:$PATH"
+        break
+      fi
+    done
   fi
 fi
 
 if ! command -v npm >/dev/null 2>&1; then
-  echo "husky (pre-push): npm not found in PATH. Install Node.js so deploy checks can run." >&2
+  if [ "${HUSKY_SKIP_NPM_CHECK:-}" = "1" ]; then
+    echo "husky (pre-push): npm not found, skipping checks because HUSKY_SKIP_NPM_CHECK=1"
+    exit 0
+  fi
+  echo "husky (pre-push): npm not found in PATH. Install Node.js or set HUSKY_SKIP_NPM_CHECK=1 to bypass." >&2
   exit 127
 fi
 
