@@ -1,8 +1,36 @@
 #!/bin/sh
 
-# Skip running release if the last commit was a version bump
-if git log -1 --pretty=%B | grep -q "chore(release)"; then
-  echo "Skipping version bump to avoid infinite loop"
+set -euo pipefail
+
+current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")"
+
+if [ "$current_branch" != "main" ]; then
+  echo "husky (pre-push): skipping deploy tasks on branch '$current_branch'"
   exit 0
 fi
-npm test && npm run release && git push --follow-tags
+
+# Skip running release if the last commit was a version bump
+if git log -1 --pretty=%B | grep -q "chore(release)"; then
+  echo "husky (pre-push): skipping because last commit was a release bump"
+  exit 0
+fi
+
+# Try to load nvm if npm is not yet available (common in GUI git clients)
+if ! command -v npm >/dev/null 2>&1; then
+  if [ -s "$HOME/.nvm/nvm.sh" ]; then
+    # shellcheck source=/dev/null
+    . "$HOME/.nvm/nvm.sh"
+  elif [ -s "$HOME/.asdf/asdf.sh" ]; then
+    # shellcheck source=/dev/null
+    . "$HOME/.asdf/asdf.sh"
+    asdf reshim nodejs >/dev/null 2>&1 || true
+  fi
+fi
+
+if ! command -v npm >/dev/null 2>&1; then
+  echo "husky (pre-push): npm not found in PATH. Install Node.js so deploy checks can run." >&2
+  exit 127
+fi
+
+npm test
+npm run release
