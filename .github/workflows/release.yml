@@ -63,7 +63,8 @@ jobs:
         id: version
         if: steps.changes.outputs.changed == 'true'
         run: |
-          echo "value=$(node -p \"require('./package.json').version\")" >> "$GITHUB_OUTPUT"
+          VERSION=$(node -p "require('./package.json').version")
+          echo "value=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Create release PR
         if: steps.changes.outputs.changed == 'true'
