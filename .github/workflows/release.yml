@@ -71,6 +71,7 @@ jobs:
         if: steps.changes.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
+          token: ${{ secrets.RELEASE_BOT_PAT }}
           commit-message: "chore(release): v${{ steps.version.outputs.value }}"
           branch: "release/v${{ steps.version.outputs.value }}"
           title: "chore(release): v${{ steps.version.outputs.value }}"
