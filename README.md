@@ -70,6 +70,8 @@ const cache = new ZapCache(1000, "redis://localhost:6379");
 ```
 ✔ Data remains even after app restarts!
 
+If the optional `ioredis` dependency is missing or Redis becomes unavailable, ZapCache automatically falls back to in-memory mode so your application keeps running.
+
 
 3️⃣ Running ZapCache as a Remote Cache
 ZapCache can act as a cache server:
@@ -86,10 +88,12 @@ telnet localhost 11211
 And use:
 
 ```ts
-SET user1 "John Doe" 5000
+SET user1 "John Doe" 5
 GET user1
 DELETE user1
 ```
+
+> **Note:** The TCP server expects TTL values in seconds. Omit the TTL for no expiry or pass `0` to delete immediately.
 
 4️⃣ Enable Multi-Node Caching (Cluster Mode)
 For distributed cache synchronization across servers:
@@ -105,9 +109,11 @@ const cache = new ClusteredCache(1000, "redis://localhost:6379");
 ```
 ✔ All ZapCache instances share the same data!
 
+Cluster mode requires a reachable Redis instance for pub/sub coordination; without it, nodes continue operating independently using their local caches.
+
 ## 🛠 API Reference
 🔹 set(key: string, value: any, ttl?: number): void
-Stores a value in the cache with an optional TTL (in milliseconds).
+Stores a value in the cache with an optional TTL (in milliseconds). Pass `0` to remove the key immediately; omit the TTL for non-expiring entries.
 
 ```ts
 await cache.set("session", { user: "Alice" }, 5000);
