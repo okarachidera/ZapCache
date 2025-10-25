@@ -4,17 +4,6 @@ set -euo pipefail
 
 current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")"
 
-if [ "$current_branch" != "main" ]; then
-  echo "husky (pre-push): skipping deploy tasks on branch '$current_branch'"
-  exit 0
-fi
-
-# Skip running release if the last commit was a version bump
-if git log -1 --pretty=%B | grep -q "chore(release)"; then
-  echo "husky (pre-push): skipping because last commit was a release bump"
-  exit 0
-fi
-
 # Try to load nvm if npm is not yet available (common in GUI git clients)
 if ! command -v npm >/dev/null 2>&1; then
   if [ -s "$HOME/.nvm/nvm.sh" ]; then
@@ -32,5 +21,13 @@ if ! command -v npm >/dev/null 2>&1; then
   exit 127
 fi
 
+if git log -1 --pretty=%B | grep -q "chore(release)"; then
+  echo "husky (pre-push): skipping tests because last commit was a release bump"
+  exit 0
+fi
+
 npm test
-npm run release
+
+if [ "$current_branch" = "main" ]; then
+  echo "husky (pre-push): reminder - production release now handled by GitHub Actions on merge to main."
+fi
