@@ -66,9 +66,9 @@ jobs:
         if: steps.changes.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
-          commit-message: chore(release): v${{ steps.version.outputs.value }}
-          branch: release/v${{ steps.version.outputs.value }}
-          title: chore(release): v${{ steps.version.outputs.value }}
+          commit-message: "chore(release): v${{ steps.version.outputs.value }}"
+          branch: "release/v${{ steps.version.outputs.value }}"
+          title: "chore(release): v${{ steps.version.outputs.value }}"
           body: |
             ## Summary
             - Automated version bump and changelog update.
