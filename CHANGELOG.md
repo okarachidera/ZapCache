@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/okarachidera/ZapCache/compare/v1.5.0...v1.6.0) (2025-10-25)
+
+
+### Features
+
+* add LRU eviction and tighten Redis handling ([f066e87](https://github.com/okarachidera/ZapCache/commit/f066e8745467e991604c668eb5884a869c539ae4))
+* switch caches to LRU and automate release flow ([372810c](https://github.com/okarachidera/ZapCache/commit/372810c15c9882b12ea6d2412b9d9218be598771))
+
 ## [1.5.0](https://github.com/okarachidera/ZapCache/compare/v1.4.2...v1.5.0) (2025-03-06)
 
 
