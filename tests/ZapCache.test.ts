@@ -13,6 +13,13 @@ test("should set and get a value", async () => {
   assert.strictEqual(await cache.get("key1"), "value1");
 });
 
+test("should preserve falsey-like string values", async () => {
+  await cache.set("empty", "");
+  await cache.set("zero", "0");
+  assert.strictEqual(await cache.get("empty"), "");
+  assert.strictEqual(await cache.get("zero"), "0");
+});
+
 test("should return null for expired items", async () => {
   await cache.set("key2", "value2", 100);
   await new Promise((resolve) => setTimeout(resolve, 200));

@@ -3,6 +3,7 @@ declare module "ioredis" {
     constructor(url?: string);
     set(key: string, value: string, ...args: Array<string | number>): Promise<unknown>;
     get(key: string): Promise<string | null>;
+    keys(pattern: string): Promise<string[]>;
     del(...keys: string[]): Promise<number>;
     publish(channel: string, message: string): Promise<number>;
     subscribe(...channels: string[]): Promise<number>;

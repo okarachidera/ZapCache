@@ -112,14 +112,14 @@ const cache = new ClusteredCache(1000, "redis://localhost:6379");
 Cluster mode requires a reachable Redis instance for pub/sub coordination; without it, nodes continue operating independently using their local caches.
 
 ## 🛠 API Reference
-🔹 set(key: string, value: any, ttl?: number): void
+🔹 set(key: string, value: any, ttl?: number): Promise<void>
 Stores a value in the cache with an optional TTL (in milliseconds). Pass `0` to remove the key immediately; omit the TTL for non-expiring entries.
 
 ```ts
 await cache.set("session", { user: "Alice" }, 5000);
 ```
 
-🔹 get<T>(key: string): T | null
+🔹 get<T>(key: string): Promise<T | null>
 Retrieves a value from the cache. Returns null if expired or not found.
 
 ```ts
@@ -127,14 +127,14 @@ const session = await cache.get<{ user: string }>("session");
 console.log(session?.user); // "Alice"
 ```
 
-🔹 delete(key: string): void
+🔹 delete(key: string): Promise<void>
 Deletes a key from the cache.
 
 ```ts
 await cache.delete("session");
 ```
 
-🔹 clear(): void
+🔹 clear(): Promise<void>
 Clears the entire cache.
 
 ```ts
@@ -171,11 +171,12 @@ users.forEach(user => cache.set(`user_${user.id}`, user, 60000));
 Cache Expiry Handling
 
 ```ts
-cache.set("tempData", "This is temporary", 3000);
-setTimeout(() => {
-    if (!cache.has("tempData")) {
-        console.log("Temp data has expired!");
-    }
+await cache.set("tempData", "This is temporary", 3000);
+setTimeout(async () => {
+  const value = await cache.get("tempData");
+  if (value === null) {
+    console.log("Temp data has expired!");
+  }
 }, 4000);
 ```
 
