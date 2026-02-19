@@ -18,6 +18,13 @@ beforeEach(() => {
   nodeB = new ClusteredCache<string>(1000, "redis://fake", fake.factory);
 });
 
+test("rejects invalid maxSize values", () => {
+  const fake = createFakeRedisFactory();
+  assert.throws(() => new ClusteredCache<string>(0, "redis://fake", fake.factory), TypeError);
+  assert.throws(() => new ClusteredCache<string>(-1, "redis://fake", fake.factory), TypeError);
+  assert.throws(() => new ClusteredCache<string>(2.2, "redis://fake", fake.factory), TypeError);
+});
+
 test("syncs update and delete events across cache nodes", async () => {
   await nodeA.set("shared", "value");
   await delay(0);

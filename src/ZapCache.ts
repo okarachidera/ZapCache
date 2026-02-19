@@ -15,6 +15,9 @@ class ZapCache<T = any> {
     redisUrl?: string,
     redisFactory: (redisUrl: string) => Promise<RedisClient | null> = createRedisClient
   ) {
+    if (!Number.isInteger(maxSize) || maxSize < 1) {
+      throw new TypeError("maxSize must be an integer greater than 0");
+    }
     this.maxSize = maxSize;
     this.redisUrl = redisUrl;
     this.redisFactory = redisFactory;

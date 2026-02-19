@@ -13,6 +13,17 @@ test("should set and get a value", async () => {
   assert.strictEqual(await cache.get("key1"), "value1");
 });
 
+test("should reject invalid maxSize values", () => {
+  assert.throws(() => new ZapCache<string>(0), TypeError);
+  assert.throws(() => new ZapCache<string>(-1), TypeError);
+  assert.throws(() => new ZapCache<string>(1.5), TypeError);
+});
+
+test("should allow positive integer maxSize", () => {
+  const validCache = new ZapCache<string>(1);
+  assert.strictEqual(validCache.size(), 0);
+});
+
 test("should preserve falsey-like string values", async () => {
   await cache.set("empty", "");
   await cache.set("zero", "0");
