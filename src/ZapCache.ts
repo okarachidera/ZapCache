@@ -1,16 +1,23 @@
 import { createRedisClient, RedisClient } from "./utils/redisLoader.js";
 
 class ZapCache<T = any> {
+  private static readonly REDIS_KEY_PREFIX = "zapcache:";
   private cache: Map<string, { value: T; expiry: number | null }> = new Map();
   private redis: RedisClient | null = null;
   private redisInitPromise: Promise<RedisClient | null> | null = null;
   private readonly redisUrl?: string;
+  private readonly redisFactory: (redisUrl: string) => Promise<RedisClient | null>;
   private maxSize: number;
   private useRedis: boolean;
 
-  constructor(maxSize = 1000, redisUrl?: string) {
+  constructor(
+    maxSize = 1000,
+    redisUrl?: string,
+    redisFactory: (redisUrl: string) => Promise<RedisClient | null> = createRedisClient
+  ) {
     this.maxSize = maxSize;
     this.redisUrl = redisUrl;
+    this.redisFactory = redisFactory;
     this.useRedis = !!redisUrl; // Enable Redis only if a URL is provided
 
     if (this.useRedis) {
@@ -47,7 +54,7 @@ class ZapCache<T = any> {
 
     const redis = await this.ensureRedis();
     if (redis) {
-      const args: (string | number)[] = [key, JSON.stringify(entry)];
+      const args: (string | number)[] = [this.formatRedisKey(key), JSON.stringify(entry)];
       if (normalizedTtl !== undefined) {
         args.push("PX", normalizedTtl);
       }
@@ -71,7 +78,16 @@ class ZapCache<T = any> {
 
     const redis = await this.ensureRedis();
     if (redis) {
-      const redisData = await redis.get(key);
+      const prefixedRedisKey = this.formatRedisKey(key);
+      let redisData = await redis.get(prefixedRedisKey);
+      let rawRedisKey = prefixedRedisKey;
+
+      if (!redisData) {
+        // Backward compatibility with keys stored before namespacing.
+        redisData = await redis.get(key);
+        rawRedisKey = key;
+      }
+
       if (!redisData) {
         return null;
       }
@@ -84,7 +100,7 @@ class ZapCache<T = any> {
             : { value: parsed as T, expiry: undefined };
 
         if (candidate.expiry && candidate.expiry <= now) {
-          await redis.del(key);
+          await redis.del(rawRedisKey);
           return null;
         }
 
@@ -104,21 +120,25 @@ class ZapCache<T = any> {
     this.cache.delete(key);
     const redis = await this.ensureRedis();
     if (redis) {
-      await redis.del(key);
+      const prefixedRedisKey = this.formatRedisKey(key);
+      if (prefixedRedisKey === key) {
+        await redis.del(key);
+      } else {
+        await redis.del(prefixedRedisKey, key);
+      }
     }
   }
 
   async clear(): Promise<void> {
-    const keys = Array.from(this.cache.keys());
+    const keys = Array.from(this.cache.keys()).map((key) => this.formatRedisKey(key));
     this.cache.clear();
-
-    if (keys.length === 0) {
-      return;
-    }
 
     const redis = await this.ensureRedis();
     if (redis) {
-      await redis.del(...keys);
+      if (keys.length > 0) {
+        await redis.del(...keys);
+      }
+      await this.clearRedisNamespace(redis);
     }
   }
 
@@ -128,7 +148,7 @@ class ZapCache<T = any> {
       return;
     }
     const firstKey = this.cache.keys().next()?.value;
-    if (firstKey) {
+    if (firstKey !== undefined) {
       this.cache.delete(firstKey);
     }
   }
@@ -157,7 +177,7 @@ class ZapCache<T = any> {
     }
 
     if (!this.redisInitPromise) {
-      this.redisInitPromise = createRedisClient(this.redisUrl).then((client) => {
+      this.redisInitPromise = this.redisFactory(this.redisUrl).then((client) => {
         if (!client) {
           this.useRedis = false;
           this.redisInitPromise = null;
@@ -175,6 +195,17 @@ class ZapCache<T = any> {
     }
 
     return this.redisInitPromise;
+  }
+
+  private formatRedisKey(key: string): string {
+    return `${ZapCache.REDIS_KEY_PREFIX}${key}`;
+  }
+
+  private async clearRedisNamespace(redis: RedisClient): Promise<void> {
+    const namespacedKeys = await redis.keys(`${ZapCache.REDIS_KEY_PREFIX}*`);
+    if (namespacedKeys.length > 0) {
+      await redis.del(...namespacedKeys);
+    }
   }
 }
 

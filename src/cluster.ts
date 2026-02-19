@@ -1,25 +1,33 @@
 import { createRedisClient, RedisClient } from "./utils/redisLoader.js";
 
 class ClusteredCache<T = any> {
+  private static readonly REDIS_KEY_PREFIX = "zapcache:";
   private cache: Map<string, { value: T; expiry: number | null }> = new Map();
   private redis: RedisClient | null = null;
   private pubSub: RedisClient | null = null;
   private redisInitPromise: Promise<RedisClient | null> | null = null;
   private pubSubInitPromise: Promise<RedisClient | null> | null = null;
   private readonly redisUrl: string;
+  private readonly redisFactory: (redisUrl: string) => Promise<RedisClient | null>;
   private redisAvailable = true;
   private pubSubAvailable = true;
   private maxSize: number;
 
-  constructor(maxSize = 1000, redisUrl = "redis://localhost:6379") {
+  constructor(
+    maxSize = 1000,
+    redisUrl = "redis://localhost:6379",
+    redisFactory: (redisUrl: string) => Promise<RedisClient | null> = createRedisClient
+  ) {
     this.maxSize = maxSize;
     this.redisUrl = redisUrl;
+    this.redisFactory = redisFactory;
 
     void this.ensureRedis();
     void this.ensurePubSub();
   }
 
   async set(key: string, value: T, ttl?: number): Promise<void> {
+    void this.ensurePubSub();
     this.purgeExpired();
 
     if (ttl !== undefined && !Number.isFinite(ttl)) {
@@ -51,7 +59,7 @@ class ClusteredCache<T = any> {
       return;
     }
 
-    const args: (string | number)[] = [key, JSON.stringify(entry)];
+    const args: (string | number)[] = [this.formatRedisKey(key), JSON.stringify(entry)];
     if (normalizedTtl !== undefined) {
       args.push("PX", normalizedTtl);
     }
@@ -60,6 +68,7 @@ class ClusteredCache<T = any> {
   }
 
   async get(key: string): Promise<T | null> {
+    void this.ensurePubSub();
     const entry = this.cache.get(key);
     const now = Date.now();
     if (entry) {
@@ -77,7 +86,16 @@ class ClusteredCache<T = any> {
       return null;
     }
 
-    const redisData = await redis.get(key);
+    const prefixedRedisKey = this.formatRedisKey(key);
+    let redisData = await redis.get(prefixedRedisKey);
+    let rawRedisKey = prefixedRedisKey;
+
+    if (!redisData) {
+      // Backward compatibility with keys stored before namespacing.
+      redisData = await redis.get(key);
+      rawRedisKey = key;
+    }
+
     if (!redisData) {
       return null;
     }
@@ -90,7 +108,7 @@ class ClusteredCache<T = any> {
           : { value: parsed as T, expiry: undefined };
 
       if (candidate.expiry && candidate.expiry <= now) {
-        await redis.del(key);
+        await redis.del(rawRedisKey);
         return null;
       }
 
@@ -104,22 +122,30 @@ class ClusteredCache<T = any> {
   }
 
   async delete(key: string): Promise<void> {
+    void this.ensurePubSub();
     this.cache.delete(key);
     const redis = await this.ensureRedis();
     if (redis) {
-      await redis.del(key);
+      const prefixedRedisKey = this.formatRedisKey(key);
+      if (prefixedRedisKey === key) {
+        await redis.del(key);
+      } else {
+        await redis.del(prefixedRedisKey, key);
+      }
       await redis.publish("cache_delete", key);
     }
   }
 
   async clear(): Promise<void> {
-    const keys = Array.from(this.cache.keys());
+    void this.ensurePubSub();
+    const keys = Array.from(this.cache.keys()).map((key) => this.formatRedisKey(key));
     this.cache.clear();
     const redis = await this.ensureRedis();
     if (redis) {
       if (keys.length > 0) {
         await redis.del(...keys);
       }
+      await this.clearRedisNamespace(redis);
       await redis.publish("cache_clear", "all");
     }
   }
@@ -159,7 +185,7 @@ class ClusteredCache<T = any> {
     }
 
     if (!this.redisInitPromise) {
-      this.redisInitPromise = createRedisClient(this.redisUrl).then((client) => {
+      this.redisInitPromise = this.redisFactory(this.redisUrl).then((client) => {
         if (!client) {
           this.redisAvailable = false;
           this.redisInitPromise = null;
@@ -191,7 +217,7 @@ class ClusteredCache<T = any> {
     }
 
     if (!this.pubSubInitPromise) {
-      this.pubSubInitPromise = createRedisClient(this.redisUrl).then(async (client) => {
+      this.pubSubInitPromise = this.redisFactory(this.redisUrl).then(async (client) => {
         if (!client) {
           this.pubSubAvailable = false;
           this.pubSubInitPromise = null;
@@ -250,6 +276,17 @@ class ClusteredCache<T = any> {
       this.cache.delete(message);
     } else if (channel === "cache_clear") {
       this.cache.clear();
+    }
+  }
+
+  private formatRedisKey(key: string): string {
+    return `${ClusteredCache.REDIS_KEY_PREFIX}${key}`;
+  }
+
+  private async clearRedisNamespace(redis: RedisClient): Promise<void> {
+    const namespacedKeys = await redis.keys(`${ClusteredCache.REDIS_KEY_PREFIX}*`);
+    if (namespacedKeys.length > 0) {
+      await redis.del(...namespacedKeys);
     }
   }
 }
