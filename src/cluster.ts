@@ -18,6 +18,9 @@ class ClusteredCache<T = any> {
     redisUrl = "redis://localhost:6379",
     redisFactory: (redisUrl: string) => Promise<RedisClient | null> = createRedisClient
   ) {
+    if (!Number.isInteger(maxSize) || maxSize < 1) {
+      throw new TypeError("maxSize must be an integer greater than 0");
+    }
     this.maxSize = maxSize;
     this.redisUrl = redisUrl;
     this.redisFactory = redisFactory;
