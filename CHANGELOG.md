@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.4](https://github.com/okarachidera/ZapCache/compare/v1.8.3...v1.8.4) (2026-09-03)
+
+
+### Bug Fixes
+
+* **deps:** generate lockfile with CI npm version ([#35](https://github.com/okarachidera/ZapCache/issues/35)) ([724887c](https://github.com/okarachidera/ZapCache/commit/724887c37a5a5f5a93d11a5b7e9f5ff4c6eb9cf8))
+* **deps:** synchronize lockfile and test loader ([#34](https://github.com/okarachidera/ZapCache/issues/34)) ([94d7a17](https://github.com/okarachidera/ZapCache/commit/94d7a17f9d1b98133f4eecfcbb3b0676e27d1ce4))
+
 ### [1.8.3](https://github.com/okarachidera/ZapCache/compare/v1.8.2...v1.8.3) (2026-09-03)
 
 ### [1.8.2](https://github.com/okarachidera/ZapCache/compare/v1.8.0...v1.8.2) (2026-09-03)
