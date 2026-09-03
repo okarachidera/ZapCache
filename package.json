@@ -2,6 +2,7 @@
   "name": "zapcache",
   "version": "1.8.3",
   "type": "module",
+  "packageManager": "npm@10.9.8",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
