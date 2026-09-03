@@ -71,9 +71,9 @@ jobs:
         if: steps.changes.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v8
         with:
-          # Prefer the bot PAT so the release PR triggers downstream workflows,
-          # but remain functional when that optional secret is not configured.
-          token: ${{ secrets.RELEASE_BOT_PAT || github.token }}
+          # Use the short-lived token issued for this workflow run instead of a
+          # long-lived PAT that can expire or be revoked.
+          token: ${{ github.token }}
           commit-message: "chore(release): v${{ steps.version.outputs.value }}"
           branch: "release/v${{ steps.version.outputs.value }}"
           title: "chore(release): v${{ steps.version.outputs.value }}"
