@@ -7,9 +7,12 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
   tag:
+    outputs:
+      tag-created: ${{ steps.tag-check.outputs.exists == 'false' }}
     runs-on: ubuntu-latest
     if: contains(github.event.head_commit.message, 'chore(release)')
     defaults:
@@ -53,3 +56,9 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git tag "$TAG"
           git push origin "$TAG"
+
+  publish:
+    needs: tag
+    if: needs.tag.outputs.tag-created == 'true'
+    uses: ./.github/workflows/publish.yml
+    secrets: inherit
