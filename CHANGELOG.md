@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.1](https://github.com/okarachidera/ZapCache/compare/v1.8.0...v1.8.1) (2026-09-03)
+
+
+### Bug Fixes
+
+* **ci:** make release PR authentication resilient ([91f857c](https://github.com/okarachidera/ZapCache/commit/91f857cc13b10a40af621705bfc0086d448f3cc6))
+* **ci:** sign automated release commits ([#24](https://github.com/okarachidera/ZapCache/issues/24)) ([4b0be91](https://github.com/okarachidera/ZapCache/commit/4b0be9194b4a893c625a048514b9a67da4bae8ee))
+* **ci:** use workflow token for release PRs ([67cfae7](https://github.com/okarachidera/ZapCache/commit/67cfae7f736220ec6f788eaefc1ec3f3e4bc10b9))
+
 ## [1.8.0](https://github.com/okarachidera/ZapCache/compare/v1.7.1...v1.8.0) (2026-02-19)
 
 
