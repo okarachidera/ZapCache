@@ -12,7 +12,7 @@
     "zapcache-server": "./dist/server.js"
   },
   "scripts": {
-    "test": "TS_NODE_PROJECT=tsconfig.json node --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' --test $(find tests -name '*.test.ts')",
+    "test": "tsx --test tests/*.test.ts",
     "build": "tsc",
     "husky": "husky install",
     "release": "standard-version",
@@ -38,7 +38,7 @@
     "husky": "^9.1.7",
     "prettier": "^3.5.3",
     "standard-version": "^9.5.0",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.23.13",
     "typescript": "^7.0.2"
   },
   "husky": {
