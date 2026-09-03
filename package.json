@@ -49,6 +49,6 @@
     }
   },
   "dependencies": {
-    "ioredis": "^5.5.0"
+    "ioredis": "^6.0.0"
   }
 }
