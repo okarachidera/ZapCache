@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.5](https://github.com/okarachidera/ZapCache/compare/v1.8.4...v1.8.5) (2026-09-03)
+
+
+### Bug Fixes
+
+* **ci:** publish after automated release tags ([#37](https://github.com/okarachidera/ZapCache/issues/37)) ([1278cca](https://github.com/okarachidera/ZapCache/commit/1278cca54813e1352b27092291dc08e073a8fc53))
+
 ### [1.8.4](https://github.com/okarachidera/ZapCache/compare/v1.8.3...v1.8.4) (2026-09-03)
 
 
