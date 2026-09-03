@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.3](https://github.com/okarachidera/ZapCache/compare/v1.8.2...v1.8.3) (2026-09-03)
+
 ### [1.8.2](https://github.com/okarachidera/ZapCache/compare/v1.8.0...v1.8.2) (2026-09-03)
 
 
