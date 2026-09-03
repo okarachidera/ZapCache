@@ -74,6 +74,7 @@ jobs:
           # Use the short-lived token issued for this workflow run instead of a
           # long-lived PAT that can expire or be revoked.
           token: ${{ github.token }}
+          sign-commits: true
           commit-message: "chore(release): v${{ steps.version.outputs.value }}"
           branch: "release/v${{ steps.version.outputs.value }}"
           title: "chore(release): v${{ steps.version.outputs.value }}"
