@@ -35,8 +35,10 @@ jobs:
       - name: Verify package contents
         run: npm pack  # Checks what will be published
 
-      - name: Enable npm trusted publishing
+      - name: Update npm for provenance support
         run: npm install --global npm@11.19.0
 
       - name: Publish to NPM
         run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
