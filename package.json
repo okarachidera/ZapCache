@@ -3,6 +3,14 @@
   "version": "1.8.6",
   "type": "module",
   "packageManager": "npm@10.9.8",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/okarachidera/ZapCache"
+  },
+  "homepage": "https://github.com/okarachidera/ZapCache#readme",
+  "bugs": {
+    "url": "https://github.com/okarachidera/ZapCache/issues"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
@@ -10,7 +18,7 @@
     "./package.json": "./package.json"
   },
   "bin": {
-    "zapcache-server": "./dist/server.js"
+    "zapcache-server": "dist/server.js"
   },
   "scripts": {
     "test": "tsx --test tests/*.test.ts",
