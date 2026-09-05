@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.7](https://github.com/okarachidera/ZapCache/compare/v1.8.6...v1.8.7) (2026-09-05)
+
+
+### Bug Fixes
+
+* **pkg:** add npm provenance repository metadata ([#41](https://github.com/okarachidera/ZapCache/issues/41)) ([8a0b7f7](https://github.com/okarachidera/ZapCache/commit/8a0b7f7a548d4193a479082ce646c3aa99c92285))
+
 ### [1.8.6](https://github.com/okarachidera/ZapCache/compare/v1.8.5...v1.8.6) (2026-09-03)
 
 
