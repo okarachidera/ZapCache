@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.8.8](https://github.com/okarachidera/ZapCache/compare/v1.8.7...v1.8.8) (2026-09-05)
+
+
+### Bug Fixes
+
+* **ci:** authenticate npm publish with repository secret ([#43](https://github.com/okarachidera/ZapCache/issues/43)) ([d238c86](https://github.com/okarachidera/ZapCache/commit/d238c86b00ef74a6f59ec05457d1e03badb9519e))
+
 ### [1.8.7](https://github.com/okarachidera/ZapCache/compare/v1.8.6...v1.8.7) (2026-09-05)
 
 
