@@ -1,28 +1,28 @@
-# ⚡ ZapCache - High-Speed In-Memory & Distributed Cache for Node.js
+# ⚡ ZapCache — Node.js caching with TTL, LRU eviction, and Redis
 
 [![npm version](https://img.shields.io/npm/v/zapcache?color=blue&label=npm)](https://www.npmjs.com/package/zapcache)  
 [![Build Status](https://github.com/okarachidera/zapcache/actions/workflows/publish.yml/badge.svg)](https://github.com/okarachidera/zapcache/actions)  
 [![License](https://img.shields.io/github/license/okarachidera/zapcache.svg)](https://github.com/okarachidera/zapcache/blob/main/LICENSE)  
 [![Downloads](https://img.shields.io/npm/dt/zapcache.svg)](https://www.npmjs.com/package/zapcache)  
 
-**ZapCache** is a **blazing-fast, LRU-based caching library** for Node.js that supports:  
+**ZapCache** is a TypeScript caching library for Node.js. Start with an in-memory cache, add expiration times, and optionally connect Redis for shared storage. It supports:
 
-✅ **In-Memory Caching** for low-latency operations  
-✅ **TTL Expiry** – Automatically removes stale data  
-✅ **Persistent Storage with Redis** – Cache data beyond restarts  
-✅ **Memcached-style TCP Server** – Access cache via a network  
-✅ **Cluster Support** – Sync cache across multiple servers  
+- ✅ **In-Memory Caching** for low-latency operations
+- ✅ **TTL Expiry** – Automatically removes stale data
+- ✅ **Redis Storage** – Retrieve cached entries after an application restart while Redis retains them
+- ✅ **TCP Server** – Access cache using simple text commands
+- ✅ **Cluster Support** – Sync cache across multiple servers
 
 ---
 
 ## 🚀 Features
-- **Super-Fast:** Low-latency, LRU-based in-memory caching  
+- **In-Memory Cache:** Local caching with LRU eviction
 - **TTL Support:** Set expiration time for cached items  
-- **Persistent Storage:** Supports Redis for long-term caching  
-- **Memcached-Style Server:** Run ZapCache as a TCP cache server  
+- **Redis Storage:** Optional Redis integration; durability depends on Redis configuration
+- **TCP Server:** Run ZapCache as a cache server with its own text protocol
 - **Cluster Support:** Sync cache across multiple servers  
 - **Eviction Mechanism:** Auto-removes least recently used (LRU) items
-- **Scalable & Lightweight** Ideal for high-performance applications
+- **TypeScript:** Define the cached value type when constructing a cache
 
 ---
 
@@ -40,6 +40,8 @@ yarn add zapcache
 ## 🔥 Quick Start
 1️⃣ Basic In-Memory Cache
 
+This example uses ES modules. Save it as `demo.mjs` and run `node demo.mjs` after installing the package.
+
 ```ts
 import ZapCache from "zapcache";
 
@@ -56,7 +58,7 @@ setTimeout(async () => {
 }, 6000);
 ```
 
-2️⃣ Persistent Storage with Redis
+2️⃣ Storage with Redis
 
 ```ts
 import ZapCache from "zapcache";
@@ -68,16 +70,16 @@ const cache = new ZapCache(1000, "redis://localhost:6379");
   console.log(await cache.get("session_123")); // ✅ { token: "xyz123" }
 })();
 ```
-✔ Data remains even after app restarts!
+Entries can survive an application restart while Redis retains them. Surviving a Redis restart depends on your Redis persistence configuration.
 
-If the optional `ioredis` dependency is missing or Redis becomes unavailable, ZapCache automatically falls back to in-memory mode so your application keeps running.
+Redis is optional for in-memory usage. If the Redis client cannot be loaded or constructed, the cache operates locally. Connection and command failures can still reject operations, so handle errors in your application.
 
 
 3️⃣ Running ZapCache as a Remote Cache
-ZapCache can act as a cache server:
+ZapCache can act as a cache server. Its simple text protocol is not a drop-in replacement for the Memcached protocol:
 
 ```sh
-npx zapcache-server
+npx --package=zapcache zapcache-server
 ```
 Then, connect via Telnet:
 
@@ -107,7 +109,7 @@ const cache = new ClusteredCache(1000, "redis://localhost:6379");
   await cache.set("order_456", { total: 100 }, 5000);
 })();
 ```
-✔ All ZapCache instances share the same data!
+`ClusteredCache` uses Redis storage and pub/sub to propagate updates, deletions, and clears between connected instances. Propagation is asynchronous.
 
 Cluster mode requires a reachable Redis instance for pub/sub coordination; without it, nodes continue operating independently using their local caches.
 
@@ -119,11 +121,13 @@ Stores a value in the cache with an optional TTL (in milliseconds). Pass `0` to 
 await cache.set("session", { user: "Alice" }, 5000);
 ```
 
-🔹 get<T>(key: string): Promise<T | null>
+🔹 `get(key: string): Promise<T | null>`
 Retrieves a value from the cache. Returns null if expired or not found.
 
 ```ts
-const session = await cache.get<{ user: string }>("session");
+const sessions = new ZapCache<{ user: string }>();
+await sessions.set("session", { user: "Alice" }, 5000);
+const session = await sessions.get("session");
 console.log(session?.user); // "Alice"
 ```
 
@@ -135,37 +139,33 @@ await cache.delete("session");
 ```
 
 🔹 clear(): Promise<void>
-Clears the entire cache.
+Clears the local cache and, when connected, Redis keys in the shared `zapcache:` namespace. Other instances using that namespace are affected.
 
 ```ts
 await cache.clear();
 ```
 
 🔹 size(): number
-Returns the number of stored items.
+Returns the number of unexpired entries in the local cache, not the total number of entries in Redis.
 ```ts
 console.log(cache.size()); // 5
 ```
 
-## 🚀 Performance Benchmarks
-ZapCache is optimized for speed and efficiency:
-- 100,000 cache set operations → ~8ms
-- 100,000 cache get operations → ~6ms 
-⚡ Ideal for real-time apps & high-performance APIs.
+## 🎯 When to Use ZapCache
+- Cache repeat API or database reads for a short period.
+- Store temporary, recomputable values in a Node.js process.
+- Experiment with Redis-backed caching or a simple TCP cache service.
 
-## 🎯 Use Cases
-- ✅ API Response Caching – Store frequently used API responses to reduce latency
-- ✅ Session Management – Keep user sessions in memory for quick access
-- ✅ Rate Limiting – Track API usage per user
-- ✅ Job Queues – Maintain in-memory queue state
-- ✅ Temporary Storage – Store data for short-lived processes
+Choose a dedicated queue, session store, or atomic rate limiter when those guarantees are required. Cache latency depends on entry count, value size, TTLs, and Redis/network conditions; benchmark your own workload before choosing a configuration.
 
 ## 🏗 Advanced Features
 Pre-Filling Cache on Startup
 
 ```ts
 const users = await fetchUsersFromDB();
-users.forEach(user => cache.set(`user_${user.id}`, user, 60000));
+for (const user of users) {
+  await cache.set(`user_${user.id}`, user, 60000);
+}
 ```
 
 Cache Expiry Handling
@@ -181,7 +181,7 @@ setTimeout(async () => {
 ```
 
 ## 🔐 Security Considerations
-⚠️ Do not store sensitive user data (passwords, private keys) in cache
+⚠️ Do not store sensitive user data (passwords, private keys) in cache. The TCP server has no built-in authentication or TLS and listens on port 11211; restrict access to a trusted network.
 
 ## 📜 [Changelog](https://github.com/okarachidera/zapcache/blob/main/CHANGELOG.md)
 See the [CHANGELOG](https://github.com/okarachidera/zapcache/blob/main/CHANGELOG.md) for details on new releases.
@@ -197,8 +197,9 @@ We welcome contributions! Feel free to:
 ```sh
 git clone https://github.com/okarachidera/zapcache.git
 cd zapcache
-npm install
+npm ci
 npm test
+npm run build
 ```
 
 ## 📄 [License](https://github.com/okarachidera/zapcache/blob/main/LICENSE)
