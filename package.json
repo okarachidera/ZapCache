@@ -1,6 +1,6 @@
 {
   "name": "zapcache",
-  "version": "1.8.10",
+  "version": "1.8.11",
   "type": "module",
   "packageManager": "npm@10.9.8",
   "repository": {
